@@ -188,3 +188,4 @@ logs/
 # UV
 .uv/
 uv.lock
+.claude

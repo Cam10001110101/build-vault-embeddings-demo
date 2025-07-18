@@ -1,100 +1,162 @@
-# The Build Vault Pipeline Demo
+# Build Vault Embeddings Demo
 
-Educational demonstration of The Build Vault's AI-powered podcast processing pipeline.
+A educational demonstration of building a knowledge vault with vector embeddings from podcast transcriptions. This project showcases modern AI/ML techniques for content processing, insight extraction, and semantic search.
 
-## Overview
+## 🎯 Key Features
 
-This demo provides a simplified, interactive walkthrough of how The Build Vault processes podcast episodes through its sophisticated pipeline.
+- **Audio Download**: Automatically downloads audio from YouTube
+- **Transcription**: Converts audio to text using AssemblyAI's speaker diarization
+- **Insight Extraction**: Uses LLMs to extract key insights, products, and ideas
+- **Vector Embeddings**: Creates semantic embeddings using OpenAI's embedding models
+- **Semantic Search**: Enables similarity-based search using ChromaDB vector database
+- **Interactive Viewer**: Browse and explore the embedded content with a user-friendly interface
 
-## Demo Modes
+## 🛠️ Prerequisites
 
-### 1. Jupyter Notebook - Real API Version
+1. **Python 3.8+** installed on your system
+2. **API Keys** (free tiers available):
+   - [OpenAI API Key](https://platform.openai.com/api-keys)
+   - [AssemblyAI API Key](https://www.assemblyai.com/)
+   - [YouTube API Key](https://developers.google.com/youtube/v3/getting-started)
+
+## 🚀 Quick Start
+
+### 1. Clone the repository
 ```bash
-cd demo
-jupyter notebook pipeline_demo.ipynb
-```
-- **Uses real API calls** to process actual podcast content
-- Requires API keys (YouTube, AssemblyAI, OpenAI, Supabase)
-- Interactive cells for each pipeline stage
-- Live progress tracking and results
-- Cost estimation included
-- ⚠️ **Will incur API costs!**
-
-### 2. Jupyter Notebook - Simulation Version
-```bash
-cd demo
-jupyter notebook pipeline_demo_simulation.ipynb
-```
-- **No API calls required** - uses pre-defined demo data
-- Interactive cells for each pipeline stage
-- Rich visualizations and charts
-- Progress animations
-- Perfect for workshops and tutorials
-- **Cost-free demonstrations**
-
-### 3. Interactive CLI Walkthrough
-```bash
-cd demo
-python run_demo.py
-```
-- Step-by-step presentation
-- Pauses between each stage
-- Detailed explanations
-- Simulated processing with progress indicators
-
-### 4. Quick CLI Overview
-```bash
-cd demo
-python quick_demo.py
-```
-- Complete pipeline visualization
-- Results summary
-- No pauses or interaction
-
-## What's Demonstrated
-
-1. **Audio Download** - YouTube video to MP3 conversion
-2. **Transcription** - AssemblyAI with speaker diarization
-3. **Segment Processing** - Intelligent grouping for API efficiency
-4. **Episode Summary** - AI-generated 150-250 word summaries
-5. **Insight Extraction** - 6 categories using Sophisticated Prompts v2
-6. **Product Extraction** - Developer tool identification
-7. **Link Processing** - URL extraction and AI enrichment
-8. **Vector Embeddings** - 3072-dimensional semantic search preparation
-
-## Demo Data
-
-The demo uses pre-defined sample data to simulate processing:
-- Sample transcript segments with Cameron and Tom
-- Example insights across all categories
-- Popular developer tools (LangChain, Supabase, Vercel)
-- Enriched links with metadata
-
-## Customization
-
-Edit `demo_config.py` to:
-- Change the demo video URL
-- Modify sample segments and insights
-- Adjust timing and display settings
-- Add your own example data
-
-## Requirements
-
-```bash
-pip install rich
+git clone https://github.com/yourusername/build-vault-embeddings-demo.git
+cd build-vault-embeddings-demo
 ```
 
-## Presentation Tips
+### 2. Configure environment
+```bash
+cp env.example .env
+```
 
-1. **For live demos**: Use interactive mode to explain each step
-2. **For recordings**: Quick mode shows everything at once
-3. **For workshops**: Modify delays in `demo_config.py`
-4. **For customization**: Replace sample data with real examples
+Edit `.env` and add your API keys:
+```
+YOUTUBE_URL=https://www.youtube.com/watch?v=YOUR_VIDEO_ID (i.e. https://www.youtube.com/watch?v=9I_WxAMQ9_0&t=3s)
+YOUTUBE_API_KEY=your_youtube_api_key_here
+ASSEMBLYAI_API_KEY=your_assemblyai_key_here
+OPENAI_API_KEY=your_openai_key_here
+LLM_MODEL=gpt-4.1-mini
+EMBEDDING_MODEL=text-embedding-3-small
+```
 
-## Architecture Highlights
+### 3. Run the pipeline
+Open a terminal in this directory and run `build_vault_demo.ipynb` in Jupyter Notebook:
+```bash
+jupyter notebook build_vault_demo.ipynb
+```
 
-- **Modular Design**: Each step can fail/resume independently
-- **AI Integration**: Multiple models for different tasks
-- **Token Optimization**: Intelligent segment grouping
-- **Vector Search**: Modern semantic search capabilities
-- **Production Ready**: Same patterns as the real pipeline
+
+
+
+### Educational Concepts
+
+This project demonstrates several key concepts:
+
+- **Vector Embeddings**: High-dimensional representations of text that capture semantic meaning
+- **Semantic Search**: Finding similar content based on meaning rather than keywords
+- **LLM Processing**: Using language models to extract structured insights from unstructured text
+- **Vector Databases**: Specialized databases for storing and querying embeddings
+
+
+
+
+
+### Data Model
+
+```mermaid
+classDiagram
+    class Episode {
+        +string id
+        +string title
+        +string youtube_video_id
+        +string youtube_url
+        +int duration
+        +datetime published_at
+        +string status
+        +string audio_file_path
+        +bool is_processed
+    }
+    
+    class Segment {
+        +string id
+        +string episode_id
+        +float start_time
+        +float end_time
+        +string raw_text
+        +string display_text
+        +string speaker
+        +float confidence
+        +float duration
+    }
+    
+    class Insight {
+        +string id
+        +string episode_id
+        +string category
+        +string content
+        +float confidence_score
+        +float segment_start
+        +float segment_end
+    }
+    
+    class Product {
+        +string id
+        +string name
+        +list episode_ids
+        +int mention_count
+    }
+    
+    class Link {
+        +string id
+        +string episode_id
+        +string url
+        +string title
+        +string description
+        +bool enriched
+    }
+    
+    Episode "1" --> "*" Segment : contains
+    Episode "1" --> "*" Insight : generates
+    Episode "*" --> "*" Product : mentions
+    Episode "1" --> "*" Link : references
+```
+
+## 📚 Educational Notes
+
+### Understanding Embeddings
+Embeddings are numerical representations of text that capture semantic meaning. Similar concepts are represented by vectors that are close together in the embedding space.
+
+### Why ChromaDB?
+ChromaDB is an open-source vector database that makes it easy to store and query embeddings. It handles the complexity of similarity search algorithms.
+
+### Customization Options
+- Modify `pipeline_config.json` to:
+  - Change batch sizes for processing
+  - Update the list of known products
+  - Customize insight extraction prompts
+  - Adjust semantic search parameters
+
+### Cost Considerations
+- OpenAI API costs: ~$0.02 per 1M tokens for embeddings
+- AssemblyAI: ~$0.65 per hour of audio
+- Most podcasts will cost < $1 to process
+
+## 🔧 Troubleshooting
+
+- **Import errors**: Ensure all packages are installed: `pip install -r requirements.txt`
+- **API errors**: Verify your API keys are correctly set in `.env`
+- **ChromaDB errors**: Delete `local_data/chromadb/` and re-run the pipeline
+
+## 📖 Learn More
+
+- [OpenAI Embeddings Guide](https://platform.openai.com/docs/guides/embeddings)
+- [ChromaDB Documentation](https://docs.trychroma.com/)
+- [AssemblyAI Transcription](https://www.assemblyai.com/docs)
+- [Vector Database Concepts](https://www.pinecone.io/learn/vector-database/)
+
+---
+
+Built for demonstration purposes on The Build Podcast.
