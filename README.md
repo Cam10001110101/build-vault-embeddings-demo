@@ -9,6 +9,7 @@ A educational demonstration of building a knowledge vault with vector embeddings
 - **Insight Extraction**: Uses LLMs to extract key insights, products, and ideas
 - **Vector Embeddings**: Creates semantic embeddings using OpenAI's embedding models
 - **Semantic Search**: Enables similarity-based search using ChromaDB vector database
+- **Graph-based QA**: Query podcast content using Neo4j knowledge graphs and natural language
 - **Interactive Viewer**: Browse and explore the embedded content with a user-friendly interface
 
 ## 🛠️ Prerequisites
@@ -18,6 +19,10 @@ A educational demonstration of building a knowledge vault with vector embeddings
    - [OpenAI API Key](https://platform.openai.com/api-keys)
    - [AssemblyAI API Key](https://www.assemblyai.com/)
    - [YouTube API Key](https://developers.google.com/youtube/v3/getting-started)
+   - [Groq API Key](https://console.groq.com/) (optional, for Groq LLM support)
+3. **Neo4j Database** (for GraphRAG):
+   - [Neo4j Desktop](https://neo4j.com/download/) or cloud instance
+   - Connection credentials (URI, username, password)
 
 ## 🚀 Quick Start
 
@@ -38,14 +43,34 @@ YOUTUBE_URL=https://www.youtube.com/watch?v=YOUR_VIDEO_ID (i.e. https://www.yout
 YOUTUBE_API_KEY=your_youtube_api_key_here
 ASSEMBLYAI_API_KEY=your_assemblyai_key_here
 OPENAI_API_KEY=your_openai_key_here
-LLM_MODEL=gpt-4.1-mini
+LLM_MODEL=gpt-4o-mini
 EMBEDDING_MODEL=text-embedding-3-small
+
+# Optional: For GraphRAG with Neo4j
+NEO4J_URI=neo4j://localhost:7687
+NEO4J_USER=neo4j
+NEO4J_PW=your_neo4j_password
+
+# Optional: For Groq LLM support
+GROQ_API_KEY=your_groq_api_key_here
+
+# Optional: For local Ollama models
+LLM_BASE_URL=http://localhost:11434
+LLM_TEMPERATURE=0.0
 ```
 
 ### 3. Run the pipeline
-Open a terminal in this directory and run `build_vault_demo.ipynb` in Jupyter Notebook:
+
+#### Option A: ChromaDB Embeddings Pipeline
+Open a terminal in this directory and run `youtube_embeddings_chromadb.ipynb` in Jupyter Notebook:
 ```bash
-jupyter notebook build_vault_demo.ipynb
+jupyter notebook youtube_embeddings_chromadb.ipynb
+```
+
+#### Option B: Neo4j GraphRAG Pipeline
+After running the embeddings pipeline, you can explore the data with graph-based QA:
+```bash
+jupyter notebook youtube_graphqa_neo4j.ipynb
 ```
 
 
@@ -59,6 +84,8 @@ This project demonstrates several key concepts:
 - **Semantic Search**: Finding similar content based on meaning rather than keywords
 - **LLM Processing**: Using language models to extract structured insights from unstructured text
 - **Vector Databases**: Specialized databases for storing and querying embeddings
+- **Knowledge Graphs**: Graph databases that represent entities and their relationships
+- **GraphRAG**: Retrieval-Augmented Generation using graph databases for context-aware Q&A
 
 
 
@@ -124,6 +151,38 @@ classDiagram
     Episode "1" --> "*" Link : references
 ```
 
+### Neo4j Graph Schema
+
+The GraphRAG implementation uses the following graph structure:
+
+```mermaid
+graph TD
+    E[Episode] -->|HAS_SEGMENT| S[Segment]
+    SP[Speaker] -->|SPEAKS_IN| S
+    S -->|MENTIONS| P[Product]
+    S -->|FOLLOWED_BY| S2[Next Segment]
+    E -->|CONTAINS_INSIGHT| I[Insight]
+    I -->|ABOUT| P
+    I -->|RELATED_TO| T[Topic]
+```
+
+**Node Types:**
+- **Episode**: YouTube video/podcast episode
+- **Segment**: Transcript segments with timestamps
+- **Speaker**: Individual speakers in the podcast
+- **Insight**: Extracted insights with categories
+- **Product**: Mentioned products/tools
+- **Topic**: Discussion topics derived from insights
+
+**Relationships:**
+- `HAS_SEGMENT`: Links episodes to their transcript segments
+- `SPEAKS_IN`: Links speakers to the segments they spoke
+- `MENTIONS`: Links segments to products they mention
+- `FOLLOWED_BY`: Temporal flow between segments
+- `CONTAINS_INSIGHT`: Links episodes to extracted insights
+- `ABOUT`: Links insights to products they discuss
+- `RELATED_TO`: Links insights to their topic categories
+
 ## 📚 Educational Notes
 
 ### Understanding Embeddings
@@ -131,6 +190,23 @@ Embeddings are numerical representations of text that capture semantic meaning. 
 
 ### Why ChromaDB?
 ChromaDB is an open-source vector database that makes it easy to store and query embeddings. It handles the complexity of similarity search algorithms.
+
+### Why Neo4j for GraphRAG?
+Neo4j is a graph database that excels at storing and querying relationships between entities. For podcast analysis, it allows us to:
+- Track who said what and when
+- Find connections between products, topics, and speakers
+- Query temporal relationships in conversations
+- Perform complex multi-hop queries using natural language
+
+### Example GraphRAG Queries
+
+With the Neo4j implementation, you can ask natural language questions like:
+- "Which products were discussed most frequently?"
+- "Show the timeline of topics discussed"
+- "Find all insights about AI and machine learning"
+- "Which speaker talked the most about technical topics?"
+- "Show conversation flow between speakers"
+- "Find products that are mentioned together"
 
 ### Customization Options
 - Modify `pipeline_config.json` to:
@@ -156,6 +232,9 @@ ChromaDB is an open-source vector database that makes it easy to store and query
 - [ChromaDB Documentation](https://docs.trychroma.com/)
 - [AssemblyAI Transcription](https://www.assemblyai.com/docs)
 - [Vector Database Concepts](https://www.pinecone.io/learn/vector-database/)
+- [Neo4j Graph Database](https://neo4j.com/docs/)
+- [LangChain GraphCypherQAChain](https://python.langchain.com/docs/integrations/graphs/neo4j_cypher)
+- [GraphRAG Concepts](https://www.microsoft.com/en-us/research/blog/graphrag-unlocking-llm-discovery-on-narrative-private-data/)
 
 ---
 
